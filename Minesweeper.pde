@@ -1,3 +1,4 @@
+int red = 500;
 int stop = 10;
 import de.bezier.guido.*;
 public final static int NUM_ROWS = 10;
@@ -21,23 +22,27 @@ void setup ()
          }
        }//declare and initialize buttons
       bombs = new ArrayList();
-      for (int i = 0; i<20; i ++){
+        
     setBombs();
-      }
+    
 }
-public void setBombs()
-{
+public void keyPressed(){
+        if (key == 'r') {
+           setup ();
+        
+ }
+}
+public void setBombs(){
+for (int i = 0; i < 20 ; i++){
 int ran1 = (int)(Math.random()*10);
 int ran2 = (int)(Math.random()*10);
+if (!bombs.contains(buttons[ran1][ran2]))    
+bombs.add(buttons[ran1][ran2]);
+ 
 
-      if (!bombs.contains(buttons[ran1][ran2]))
-      bombs.add(buttons[ran1][ran2]);
-      else 
-      setBombs();
-   
-        
-  
 }
+   }
+
 
 public void draw ()
 {
@@ -57,11 +62,24 @@ public boolean isWon()
 }
 public void displayLosingMessage()
 {
-    //your code here
+     buttons[5][1].setLabel("Y");
+    buttons[5][2].setLabel("O");
+    buttons[5][3].setLabel("U");
+    buttons[5][4].setLabel("L");
+    buttons[5][5].setLabel("O");
+    buttons[5][6].setLabel("S");
+    buttons[5][7].setLabel("E");
+    buttons[5][8].setLabel("!");
 }
 public void displayWinningMessage()
 {
-    //your code here
+    buttons[5][2].setLabel("Y");
+    buttons[5][3].setLabel("O");
+    buttons[5][4].setLabel("U");
+    buttons[5][5].setLabel("W");
+    buttons[5][6].setLabel("I");
+    buttons[5][7].setLabel("N");
+    buttons[5][8].setLabel("!");
 }
 
 public class MSButton
@@ -75,6 +93,117 @@ public class MSButton
     {
          width = 400/NUM_COLS;
          height = 400/NUM_ROWS;
+        r = rr;
+        c = cc; 
+        x = c*width;
+        y = r*height;
+        label = "";
+        marked = clicked = false;
+        Interactive.add( this ); // register it with the manager
+    }
+    public boolean isMarked()
+    {
+        return marked;
+    }
+    public boolean isClicked()
+    {
+        return clicked;
+    }
+    // called by manager
+    
+    public void mousePressed () 
+    {
+       if (mouseButton == LEFT)
+        {
+            if (!clicked)
+                clicked = true;
+            if (keyPressed)
+                marked = !marked;
+            else if (bombs.contains(this))
+                displayLosingMessage();
+            else if (countBombs(r, c) > 0)
+                setLabel(str(countBombs(r, c)));
+            else
+            {
+                if (isValid(r, c+1) && !buttons[r][c+1].isClicked())
+                    buttons[r][c+1].mousePressed();
+                if (isValid(r, c-1) && !buttons[r][c-1].isClicked())
+                    buttons[r][c-1].mousePressed();
+                if (isValid(r-1, c) && !buttons[r-1][c].isClicked())
+                    buttons[r-1][c].mousePressed();            
+                if (isValid(r+1, c) && !buttons[r+1][c].isClicked())
+                    buttons[r+1][c].mousePressed();
+                if (isValid(r-1, c-1) && !buttons[r-1][c-1].isClicked())
+                    buttons[r-1][c-1].mousePressed();
+                if (isValid(r-1, c+1) && !buttons[r-1][c+1].isClicked())
+                    buttons[r-1][c+1].mousePressed();
+                if (isValid(r+1, c+1) && !buttons[r+1][c+1].isClicked())
+                    buttons[r+1][c+1].mousePressed();
+                if (isValid(r+1, c-1) && !buttons[r+1][c-1].isClicked())
+                    buttons[r+1][c-1].mousePressed();
+            }
+        }  
+        if (mouseButton == RIGHT)
+        {
+            if (clicked == false)
+                marked = !marked;
+        }
+    }
+
+    public void draw () 
+    {    
+        if (marked){
+            fill(0);
+            
+        }else if( clicked && bombs.contains(this) && !marked ){ 
+          displayLosingMessage();
+          
+        }else if(clicked){
+            fill( 200 );
+        }else 
+        fill( 100 );
+        rect(x, y, width, height);
+        fill(0);
+        
+        text(label,x+width/2,y+height/2);
+    }
+    public void setLabel(String newLabel)
+    {
+      fill(200,0,0,red);
+        label = newLabel;
+    }
+    public boolean isValid(int r, int c)
+    {
+              if(r <= 9 && r >= 0 && c <= 9 && c >= 0)
+        return true;
+      
+        return false;
+       
+    }
+    public int countBombs(int row, int col)
+    {
+        int numBombs = 0;
+                if (isValid(r, c+1) && bombs.contains(buttons[r][c+1]))
+            numBombs++;
+        if (isValid(r, c-1) && bombs.contains(buttons[r][c-1]))
+            numBombs++;
+        if (isValid(r+1, c) && bombs.contains(buttons[r+1][c]))
+            numBombs++;
+        if (isValid(r-1, c) && bombs.contains(buttons[r-1][c]))
+            numBombs++;
+        if (isValid(r+1, c+1) && bombs.contains(buttons[r+1][c+1]))
+            numBombs++;
+        if (isValid(r+1, c-1) && bombs.contains(buttons[r+1][c-1]))
+            numBombs++;
+        if (isValid(r-1, c+1) && bombs.contains(buttons[r-1][c+1]))
+            numBombs++;
+        if (isValid(r-1, c-1) && bombs.contains(buttons[r-1][c-1]))
+            numBombs++;
+        return numBombs;
+    }//your code here
+      
+    
+}
         r = rr;
         c = cc; 
         x = c*width;
