@@ -115,7 +115,7 @@ public class MSButton
     
       public void mousePressed()
     {
-        if(mouseButton == LEFT && !marked)
+        if(mouseButton == LEFT )
             clicked = true;
         if(mouseButton == RIGHT && !clicked)
             marked = !marked;
